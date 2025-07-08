@@ -12,12 +12,38 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;
     protected static ?string $navigationIcon = 'heroicon-o-shield-check';
     protected static ?string $navigationGroup = 'Access Control';
+
+    public static function canAccess(): bool{
+        if (! Auth::check()) {
+            return false;
+        }
+
+        return Auth::user()->can('role.access');
+    }
+
+    public static function canView(Model $record): bool{
+        return auth()->user()->can('role.view');
+    }
+
+    public static function canCreate(): bool{
+        return auth()->user()->can('role.create');
+    }
+
+    public static function canEdit(Model $record): bool{
+        return auth()->user()->can('role.edit');
+    }
+
+    public static function canDelete(Model $record): bool{
+        return auth()->user()->can('role.delete');
+    }
 
     public static function form(Form $form): Form
     {
